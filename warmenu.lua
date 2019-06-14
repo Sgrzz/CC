@@ -9,7 +9,7 @@ WarMenu.debug = true
 
 -- Local variables
 local menus = { }
-local keys = { up = 32, down = 33, left = 34, right = 35, select = 176, back = 177 }
+local keys = { up = 172, down = 173, left = 174, right = 175, select = 176, back = 177 }
 
 local optionCount = 0
 
@@ -121,7 +121,7 @@ local function drawSubTitle()
         local x = menus[currentMenu].x + menuWidth / 2
         local y = menus[currentMenu].y + titleHeight + buttonHeight / 2
 
-        local subTitleColor = { r = menus[currentMenu].titleColor.r, g = menus[currentMenu].titleColor.g, b = menus[currentMenu].titleColor.b, a = 255 }
+        local subTitleColor = { r = menus[currentMenu].titleBackgroundColor.r, g = menus[currentMenu].titleBackgroundColor.g, b = menus[currentMenu].titleBackgroundColor.b, a = 255 }
 
         drawRect(x, y, menuWidth, buttonHeight, menus[currentMenu].subTitleBackgroundColor)
         drawText(menus[currentMenu].subTitle, menus[currentMenu].x + buttonTextXOffset, y - buttonHeight / 2 + buttonTextYOffset, buttonFont, subTitleColor, buttonScale, false)
@@ -468,7 +468,7 @@ function WarMenu.Display()
 
 			
 			
-            if IsControlJustPressed(0, keys.down) then
+            if (IsControlJustPressed(0, keys.down)) or (IsDisabledControlJustPressed(0, keys.down))  then
                 PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
 
                 if menus[currentMenu].currentOption < optionCount then
@@ -476,7 +476,7 @@ function WarMenu.Display()
                 else
                     menus[currentMenu].currentOption = 1
                 end
-            elseif IsControlJustPressed(0, keys.up) then
+            elseif (IsControlJustPressed(0, keys.up)) or (IsDisabledControlJustPressed(0, keys.up)) then
                 PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
 
                 if menus[currentMenu].currentOption > 1 then
@@ -485,38 +485,40 @@ function WarMenu.Display()
                     menus[currentMenu].currentOption = optionCount
                 end
 				
-			elseif IsControlJustPressed(0, keys.left) then
+			elseif (IsControlJustPressed(0, keys.left)) or (IsDisabledControlJustPressed(0, keys.left)) then
 				currentKey = keys.left
 					
 					
-			elseif IsControlJustPressed(0, keys.right) then				
+			elseif (IsControlJustPressed(0, keys.right)) or (IsDisabledControlJustPressed(0, keys.right)) then				
 				currentKey = keys.right
 			
-			elseif IsControlPressed(0, keys.left) then
+			elseif (IsControlPressed(0, keys.left)) or (IsDisabledControlPressed(0, keys.left)) then
 				
 				pressed = keys.left
 					
-			elseif IsControlPressed(0, keys.right) then				
+			elseif (IsControlPressed(0, keys.right)) or (IsDisabledControlPressed(0, keys.right)) then				
 				
 				pressed = keys.right
-			elseif (IsControlJustReleased(0,keys.left)) then
+			elseif (IsControlJustReleased(0,keys.left)) or (IsDisabledControlJustReleased(0,keys.left)) then
 				pressed = nil
-			elseif (IsControlJustReleased(0,keys.right)) then
+			elseif (IsControlJustReleased(0,keys.right)) or (IsDisabledControlJustReleased(0,keys.right)) then
 				pressed = nil
-            elseif IsControlJustPressed(0, keys.select) then
+            elseif (IsControlJustPressed(0, keys.select)) or (IsDisabledControlJustPressed(0, keys.select)) then
                 currentKey = keys.select
-            elseif IsControlJustPressed(0, keys.back) then
+            elseif (IsControlJustPressed(0, keys.back)) or (IsDisabledControlJustPressed(0, keys.back)) then
                 if menus[menus[currentMenu].previousMenu] then
                     PlaySoundFrontend(-1, "BACK", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
                     setMenuVisible(menus[currentMenu].previousMenu, true)
-                else
-                    WarMenu.CloseMenu()
                 end
             end
 			
             optionCount = 0
         end
     end
+end
+
+function WarMenu.SetCurrent(n)
+    menus[currentMenu].currentOption = n
 end
 
 
@@ -576,3 +578,5 @@ end
 function WarMenu.SetMenuButtonPressedSound(id, name, set)
     setMenuProperty(id, 'buttonPressedSound', { ['name'] = name, ['set'] = set })
 end
+
+
